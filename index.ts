@@ -52,7 +52,7 @@ app.use(
   })
 );
 const initApp = async (): Promise<void> => {
-  // init mongodb
+  // init mongo
   await initDB();
 
   // passport init

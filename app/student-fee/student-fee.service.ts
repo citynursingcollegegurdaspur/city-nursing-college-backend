@@ -20,7 +20,7 @@ export const updateStudentFee = async (id: string, data: IStudentFee) => {
 
 export const editStudentFee = async (
   id: string,
-  data: Partial<IStudentFee>,
+  data: Partial<IStudentFee>
 ) => {
   const result = await StudentFeeSchema.findOneAndUpdate({ _id: id }, data);
   return result;
@@ -46,7 +46,7 @@ export const getStudentFeeByIdWithSemesterAndStudent = async (id: string) => {
 };
 export const getLatestStudentFeeBySemester = async (
   semester: string,
-  student: string,
+  student: string
 ) => {
   const result = await StudentFeeSchema.findOne({ semester, student })
     .sort({ createdAt: -1 })
@@ -55,7 +55,7 @@ export const getLatestStudentFeeBySemester = async (
 };
 export const getTotalAmountPaidByStudentForSemester = async (
   semester: string,
-  student: string,
+  student: string
 ): Promise<number> => {
   // Aggregate the total paid amount
   const result = await StudentFeeSchema.aggregate([
@@ -81,7 +81,7 @@ export const getTotalAmountPaidByStudentForSemester = async (
 export const getAllStudentFee = async ({
   student,
   haveBalanceFees,
-  paginationOptions
+  paginationOptions,
 }: {
   student?: string;
   haveBalanceFees?: boolean;
@@ -95,6 +95,7 @@ export const getAllStudentFee = async ({
 
   if (haveBalanceFees) {
     matchQuery["balanceFees"] = { $gt: 0 }; // Only fetch records where balanceFees is greater than 0
+    matchQuery["paidAmount"] = { $gt: 0 }; // Only fetch records where paidAmount is greater than 0
   }
 
   const aggregationQuery = StudentFeeSchema.aggregate([
@@ -134,7 +135,10 @@ export const getAllStudentFee = async ({
     },
     { $unwind: "$student.course" },
   ]);
-  const result = await StudentFeeSchema.aggregatePaginate(aggregationQuery, paginationOptions);
+  const result = await StudentFeeSchema.aggregatePaginate(
+    aggregationQuery,
+    paginationOptions
+  );
   return result;
 };
 

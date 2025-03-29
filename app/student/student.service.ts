@@ -24,7 +24,7 @@ export const editStudent = async (id: string, data: Partial<IStudent>) => {
 export const deleteStudent = async (id: string) => {
   const result = await StudentSchema.updateOne(
     { _id: id },
-    { isDeleted: true },
+    { isDeleted: true }
   );
   return result;
 };
@@ -54,7 +54,7 @@ export const getStudentByIdWithCourseAndItsSemesters = async (id: string) => {
 };
 
 export const getStudentByRegistrationNumber = async (
-  registrationNumber: string,
+  registrationNumber: string
 ) => {
   const result = await StudentSchema.findOne({
     registrationNumber,
@@ -74,7 +74,7 @@ export const getStudentByRegistrationNumber = async (
   return result;
 };
 export const getAnyStudentByRegistrationNumber = async (
-  registrationNumber: string,
+  registrationNumber: string
 ) => {
   const result = await StudentSchema.findOne({ registrationNumber }).lean();
   return result;
@@ -87,31 +87,31 @@ export const getStudentByAadharNumber = async (aadharNumber: string) => {
   return result;
 };
 
-export const getAllStudent = async (options: Record<string, any>, conditions:Record<string, any>) => {
+export const getAllStudent = async (
+  options: Record<string, any>,
+  conditions: Record<string, any>
+) => {
   const query: Record<string, any> = { isDeleted: false };
-const {studentRegistrationNumber} = conditions;
+  const { studentRegistrationNumber } = conditions;
   if (studentRegistrationNumber) {
     query.registrationNumber = studentRegistrationNumber;
   }
-  const result = await StudentSchema.paginate(
-    query,
-    {
-      ...options,
+  const result = await StudentSchema.paginate(query, {
+    ...options,
+    populate: {
+      path: "course",
+      model: "course",
       populate: {
-        path: "course",
-        model: "course",
-        populate: {
-          path: "semesters",
-          model: "SemesterFee",
-        },
+        path: "semesters",
+        model: "SemesterFee",
       },
     },
-  );
+  });
   return result;
 };
 
 export const getAllStudentCount = async () => {
-  const result = await StudentSchema.count({});
+  const result = await StudentSchema.count({ isDeleted: false });
   return result;
 };
 

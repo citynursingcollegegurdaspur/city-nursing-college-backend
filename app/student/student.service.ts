@@ -96,17 +96,32 @@ export const getAllStudent = async (
   if (studentRegistrationNumber) {
     query.registrationNumber = studentRegistrationNumber;
   }
-  const result = await StudentSchema.paginate(query, {
-    ...options,
-    populate: {
-      path: "course",
-      model: "course",
+  let result;
+  if (options.limit === -1) {
+    result = await StudentSchema.find(query)
+      .populate({
+        path: "course",
+        model: "course",
+        populate: {
+          path: "semesters",
+          model: "SemesterFee",
+        },
+      })
+      .sort(options.sort);
+  } else {
+    result = await StudentSchema.paginate(query, {
+      ...options,
       populate: {
-        path: "semesters",
-        model: "SemesterFee",
+        path: "course",
+        model: "course",
+        populate: {
+          path: "semesters",
+          model: "SemesterFee",
+        },
       },
-    },
-  });
+    });
+  }
+
   return result;
 };
 
